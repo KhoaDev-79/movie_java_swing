@@ -1,0 +1,89 @@
+-- Tạo bảng Role và thêm quyền
+CREATE TABLE Role (
+    RoleID INT PRIMARY KEY IDENTITY(1,1),
+    RoleName NVARCHAR(50) NOT NULL
+);
+
+-- Thêm các quyền cơ bản: admin, nhân viên, và khách hàng
+INSERT INTO Role (RoleName) VALUES ('Admin'), ('Employee'), ('Customer');
+
+-- Tạo bảng UserInfo và thêm thông tin mới
+CREATE TABLE UserInfo (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    UserName NVARCHAR(50) NOT NULL,
+    Password NVARCHAR(50) NOT NULL,
+    RoleID INT,
+    Gender NVARCHAR(50),
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Address NVARCHAR(200),
+    Birthday DATE,
+    FOREIGN KEY (RoleID) REFERENCES Role(RoleID)
+);
+
+-- Thêm tài khoản admin mặc định
+INSERT INTO UserInfo (UserName, Password, RoleID) VALUES ('admin', '123', 1); -- Giả sử vai trò admin có ID là 1
+
+-- Tạo bảng Movie để lưu thông tin về phim
+CREATE TABLE Movie (
+    MovieID INT PRIMARY KEY IDENTITY(1,1),
+    MovieName NVARCHAR(100) NOT NULL,
+    Genre NVARCHAR(50),
+    Director NVARCHAR(100),
+    Cast NVARCHAR(500),
+    Summary NVARCHAR(MAX),
+    Duration INT,
+    Year INT
+);
+
+-- Tạo bảng Theatre để lưu thông tin về phòng chiếu
+CREATE TABLE Theatre (
+    TheatreID INT PRIMARY KEY IDENTITY(1,1),
+    TheatreName NVARCHAR(100) NOT NULL,
+    Screen NVARCHAR(100), -- Thay đổi kiểu dữ liệu thành NVARCHAR
+    SeatCapacity INT
+);
+
+
+-- Tạo bảng Showtime để lưu thông tin về các suất chiếu
+CREATE TABLE Showtime (
+    ShowtimeID INT PRIMARY KEY IDENTITY(1,1),
+    MovieID INT,
+    TheatreID INT,
+    StartTime DATETIME,
+    FOREIGN KEY (MovieID) REFERENCES Movie(MovieID),
+    FOREIGN KEY (TheatreID) REFERENCES Theatre(TheatreID)
+);
+
+-- Tạo bảng Seat để lưu thông tin về ghế ngồi
+CREATE TABLE Seat (
+    SeatID INT PRIMARY KEY IDENTITY(1,1),
+    SeatNumber NVARCHAR(10) NOT NULL,
+    TheatreID INT,
+    FOREIGN KEY (TheatreID) REFERENCES Theatre(TheatreID)
+);
+
+-- Tạo bảng Invoice để lưu thông tin về hóa đơn
+CREATE TABLE Invoice (
+    InvoiceID INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeID INT,
+    CustomerID INT,
+    InvoiceDate DATETIME,
+    TotalAmount DECIMAL(10, 2),
+    FOREIGN KEY (EmployeeID) REFERENCES UserInfo(UserID),
+    FOREIGN KEY (CustomerID) REFERENCES UserInfo(UserID)
+);
+
+-- Tạo bảng Ticket để lưu thông tin về vé
+CREATE TABLE Ticket (
+    TicketID INT PRIMARY KEY IDENTITY(1,1),
+    ShowtimeID INT,
+    SeatID INT,
+    Price DECIMAL(10, 2),
+    BookingTime DATETIME,
+    InvoiceID INT, -- Thêm trường để liên kết với hóa đơn
+    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID),
+    FOREIGN KEY (SeatID) REFERENCES Seat(SeatID),
+    FOREIGN KEY (InvoiceID) REFERENCES Invoice(InvoiceID) -- Khóa ngoại liên kết với hóa đơn
+);
+
