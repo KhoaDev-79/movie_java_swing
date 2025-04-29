@@ -15,7 +15,6 @@ import java.util.List;
 public class InvoiceDao {
 
     // Phương thức để lưu hóa đơn và danh sách vé vào CSDL
-	//saveInvoice
     public boolean saveInvoice(Invoice invoice, List<Ticket> tickets) {
         Connection connection = null;
         PreparedStatement invoiceStatement = null;
